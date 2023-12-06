@@ -1,7 +1,16 @@
+using FirstMVCSQL.Data;
+using System.Data;
+using System.Data.SqlClient;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+var dbConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddSingleton<IDbConnection>((sp) => new SqlConnection(dbConnectionString));
+
+builder.Services.AddScoped<IRepositorioContactos, RepositorioContactos>();
 
 var app = builder.Build();
 
