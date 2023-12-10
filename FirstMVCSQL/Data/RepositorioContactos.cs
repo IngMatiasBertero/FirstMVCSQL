@@ -25,7 +25,7 @@ namespace FirstMVCSQL.Data
 
         public async Task<IEnumerable<Contactos>> GetAll()
         {
-            var sql = @"SELECT Id, FirstName, LastName, Address
+            var sql = @"SELECT Id, FirstName, LastName, Phone, Address
                         FROM Contactos";
 
             return await _dbConnection.QueryAsync<Contactos>(sql, new { });
@@ -33,7 +33,7 @@ namespace FirstMVCSQL.Data
 
         public async Task<Contactos> GetDetails(int id)
         {
-            var sql = @"SELECT Id, FirstName, LastName, Address
+            var sql = @"SELECT Id, FirstName, LastName, Phone, Address
                         FROM Contactos 
                         WHERE Id = @Id";
 

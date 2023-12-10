@@ -1,20 +1,33 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FirstMVCSQL.Data;
+using FirstMVCSQL.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace FirstMVCSQL.Controllers
 {
     public class ContactController : Controller
     {
-        // GET: ContactController
-        public ActionResult Index()
+        private readonly IRepositorioContactos _repositorioContactos;
+
+
+        public ContactController(IRepositorioContactos repositorioContactos)
         {
-            return View();
+            _repositorioContactos = repositorioContactos;
+        }
+
+        // GET: ContactController
+        public async Task <ActionResult> Index()
+        {
+            var contactos = await _repositorioContactos.GetAll();
+
+            return View(contactos);
         }
 
         // GET: ContactController/Details/5
-        public ActionResult Details(int id)
+        public async Task <ActionResult> Details(int id)
         {
-            return View();
+            var contacto = await _repositorioContactos.GetDetails(id);
+            return View(contacto);
         }
 
         // GET: ContactController/Create
@@ -26,10 +39,21 @@ namespace FirstMVCSQL.Controllers
         // POST: ContactController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task <ActionResult> Create(IFormCollection collection)
         {
             try
             {
+
+                var contacto = new Contactos()
+                {
+                    FirstName = collection["FirstName"],
+                    LastName = collection["LastName"],
+                    Phone = collection["Phone"],
+                    Address = collection["Address"]
+                };
+
+                await _repositorioContactos.Insert(contacto);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -39,18 +63,33 @@ namespace FirstMVCSQL.Controllers
         }
 
         // GET: ContactController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task <ActionResult> Edit(int id)
         {
-            return View();
+            var contacto = await _repositorioContactos.GetDetails(id);
+
+            return View(contacto);
         }
 
         // POST: ContactController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task <ActionResult> Edit(int id, IFormCollection collection)
         {
             try
             {
+
+                var contacto = new Contactos()
+                {
+                    Id = int.Parse(collection["Id"]),
+                    FirstName = collection["FirstName"],
+                    LastName = collection["LastName"],
+                    Phone = collection["Phone"],
+                    Address = collection["Address"]
+                };
+
+                await _repositorioContactos.Update(contacto);
+
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -60,18 +99,22 @@ namespace FirstMVCSQL.Controllers
         }
 
         // GET: ContactController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            return View();
+            var contacto = await _repositorioContactos.GetDetails(id);
+            return View(contacto );
         }
 
         // POST: ContactController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task <ActionResult> Delete(int id, IFormCollection collection)
         {
             try
             {
+
+                await _repositorioContactos.Delete(id);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
